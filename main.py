@@ -54,12 +54,6 @@ def login():
 
     return render_template("login.html")
 
-@app.route("/profile")
-def profile():
-    if not session.get("logged_in"):
-        return redirect(url_for("login"))
-
-    return render_template("profile.html")
 
 @app.route("/logout")
 def logout():
