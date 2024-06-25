@@ -54,6 +54,18 @@ def login():
 
     return render_template("login.html")
 
+@app.route("/profile")
+def profile():
+    if not session.get("logged_in"):
+        return redirect(url_for("login"))
+
+    return render_template("profile.html")
+
+@app.route("/logout")
+def logout():
+    session.pop('logged_in', None)  # Lösche die Session-Variable für eingeloggten Benutzer
+    return redirect(url_for('start_page'))
+
 
 if __name__ == "__main__":
     app.run(debug=True)
