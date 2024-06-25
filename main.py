@@ -2,6 +2,7 @@
 from flask import Flask, render_template, request, flash, redirect, url_for, session
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import datetime
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
@@ -10,10 +11,17 @@ app.config['SECRET_KEY'] = 'your_secret_key'  # Notwendig für Flash-Messages
 database = SQLAlchemy(app)
 
 
+
 class Users(database.Model):
     id = database.Column(database.Integer, primary_key=True)
     email = database.Column(database.String(200), unique=True, nullable=False)
     password = database.Column(database.String(200), nullable=False)
+
+
+class Medications(database.Model):
+    name = database.Column(database.Integer, primary_key=True)
+    amount = database.Column(database.String(200), nullable=False)
+    date = database.Column(database.DateTime(), default=datetime.utcnow, nullable=False)
 
 
 @app.route("/")
