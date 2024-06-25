@@ -1,7 +1,7 @@
-from main import app, db
+from main import app, database, Users
 
 # Anwendungskontext manuell erstellen
 with app.app_context():
-    db.create_all()
+    database.create_all()
 
 print("Benutzer-Datenbank und Tabellen wurden erfolgreich erstellt.")

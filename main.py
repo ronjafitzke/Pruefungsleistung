@@ -1,23 +1,58 @@
 # -*- coding: utf-8 -*-
-from flask import Flask, render_template
+from flask import Flask, render_template, request, flash, redirect, url_for, session
 from flask_sqlalchemy import SQLAlchemy
+from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'your_secret_key'  # Notwendig für Flash-Messages
-db = SQLAlchemy(app)
+database = SQLAlchemy(app)
 
 
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(200), unique=True, nullable=False)
-    password = db.Column(db.String(200), nullable=False)
+class Users(database.Model):
+    id = database.Column(database.Integer, primary_key=True)
+    email = database.Column(database.String(200), unique=True, nullable=False)
+    password = database.Column(database.String(200), nullable=False)
 
 
 @app.route("/")
 def start_page():
     return render_template('start_page.html')
+
+
+@app.route("/register", methods=["GET", "POST"])
+def register():
+    if request.method == "POST":
+        email = request.form.get("email")
+        password = request.form.get("password")
+        hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
+
+        new_user = Users(email=email, password=hashed_password)
+        database.session.add(new_user)
+        database.session.commit()
+        flash("Registrierung erfolgreich! Sie können sich jetzt einloggen.")
+        return redirect(url_for("login"))
+
+    return render_template("register.html")
+
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        email = request.form.get("email")
+        password = request.form.get("password")
+
+        user = Users.query.filter_by(email=email).first()
+        if user and check_password_hash(user.password, password):
+            session["logged_in"] = True
+            session["user_id"] = user.id
+            flash("Login erfolgreich!")
+            return redirect(url_for("start_page"))
+        else:
+            flash("Ungültige E-Mail oder Passwort")
+
+    return render_template("login.html")
 
 
 if __name__ == "__main__":
