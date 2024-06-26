@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Medikamentendatenbank</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        body {
+            background-color: #8DB6CD; /* Ändern Sie diese Farbe nach Bedarf */
+          h1 {
+              font-size: 1.7em; /* Schriftgröße auf 2em setzen */
+              margin-bottom: 15px; /* Abstand nach unten hinzufügen */
+              margin-top: 10px
+          }
+
+          h2 {
+              font-size: 1.7em; /* Schriftgröße auf 2em setzen */
+              margin-bottom: 15px; /* Abstand nach unten hinzufügen */
+              margin-top: 10px
+          }
+
+
+        .search-form input[type="text"] {
+            width: 80%;
+            padding: 8px;
+            border: none;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+
+        .search-form button {
+            padding: 8px 15px;
+            background-color: #0056b3;
+            border: none;
+            color: #fff;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+
+        .search-form button:hover {
+            background-color: #004799;
+        }
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <div class="container-fluid">
+    <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-prescription2" viewBox="0 0 16 16">
+      <path d="M7 6h2v2h2v2H9v2H7v-2H5V8h2z"/>
+      <path d="M2 1a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1v10.5a1.5 1.5 0 0 1-1.5 1.5h-7A1.5 1.5 0 0 1 3 14.5V4a1 1 0 0 1-1-1zm2 3v10.5a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 .5-.5V4zM3 3h10V1H3z"/>
+    </svg>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href="#">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('medications') }}">Medikamente</a>
+        </li>
+      </ul>
+      <ul class="navbar-nav">
+        {% if session.get('logged_in') %}
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('profile') }}">Mein Profil</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+        </li>
+        {% else %}
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('login') }}">Login</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('register') }}">Registrieren</a>
+        </li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>
+<h1>Herzlich Wilkommen!</h1>
+<h2>Auf dieser Seite können Sie sich einen Überblick über alle verfügbaren Medikamente verschaffen, sowie ihre eigenen Medikamente verwalten.</h2>
+
+</body>
+</html>
