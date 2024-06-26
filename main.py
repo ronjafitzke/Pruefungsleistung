@@ -55,7 +55,7 @@ def login():
             session["logged_in"] = True
             session["user_id"] = user.id
             flash("Login erfolgreich!")
-            return redirect(url_for("start_page"))
+            return redirect(url_for("home"))
         else:
             flash("Ungültige E-Mail oder Passwort")
 
@@ -65,7 +65,7 @@ def login():
 @app.route("/logout")
 def logout():
     session.pop('logged_in', None)  # Lösche die Session-Variable für eingeloggten Benutzer
-    return redirect(url_for('start_page'))
+    return redirect(url_for('home'))
 
 
 @app.route("/profile")
