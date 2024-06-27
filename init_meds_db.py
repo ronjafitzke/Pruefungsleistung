@@ -1,4 +1,4 @@
-from main import app, database, Medications
+from main import app, database, Medikament
 
 # Anwendungskontext manuell erstellen
 with app.app_context():

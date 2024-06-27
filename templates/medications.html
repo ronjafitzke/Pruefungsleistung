@@ -55,7 +55,7 @@
           <a class="nav-link" href="{{ url_for('home') }}">Home</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="{{ url_for('medications') }}">Medikamente</a>
+          <a class="nav-link" href="{{ url_for('medikamente') }}">Medikamente</a>
         </li>
       </ul>
       <ul class="navbar-nav">
@@ -85,6 +85,22 @@
         <button type="submit">Suchen</button>
     </form>
 </div>
+<table class="table table-bordered border-primary mt-5">
+    <tr>
+        <th>name</th>
+        <th>manufacturer</th>
+        <th>dosage</th>
+        <th>description</th>
+    </tr>
+    {% for medikament in medikamente %}
+    <tr>
+        <td>{{ medikament.name }}</td>
+        <td>{{ medikament.hersteller }}</td>
+        <td>{{ medikament.dosierung }}</td>
+        <td>{{ medikament.beschreibung }}</td>
+    </tr>
+    {% endfor %}
+</table>
 
 </body>
 </html>

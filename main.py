@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import requests
 from flask import Flask, render_template, request, flash, redirect, url_for, session
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -10,6 +11,19 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'your_secret_key'  # Notwendig für Flash-Messages
 database = SQLAlchemy(app)
 
+# API URL
+# Neue API URL und Header
+url = "https://drugapi.p.rapidapi.com/Drug/Summary/Acetaminophen-and-Codeine-Phosphate-Oral-Solution-acetaminophen-codeine-phosphate-665"
+
+headers = {
+    "x-rapidapi-key": "a6261f39ffmsh6d2b2c8f6353733p12512cjsn13b0c4ace526",
+    "x-rapidapi-host": "drugapi.p.rapidapi.com"
+}
+
+# Daten abrufen
+response = requests.get(url, headers=headers)
+data = response.json()
+
 
 class Users(database.Model):
     id = database.Column(database.Integer, primary_key=True)
@@ -17,10 +31,34 @@ class Users(database.Model):
     password = database.Column(database.String(200), nullable=False)
 
 
-class Medications(database.Model):
-    name = database.Column(database.Integer, primary_key=True)
-    amount = database.Column(database.String(200), nullable=False)
-    date = database.Column(database.DateTime(), default=datetime.utcnow, nullable=False)
+class Medikament(database.Model):
+    id = database.Column(database.Integer, primary_key=True)
+    name = database.Column(database.String(200), nullable=False)
+    hersteller = database.Column(database.String(200), nullable=False)
+    dosierung = database.Column(database.String(200), nullable=False)
+    beschreibung = database.Column(database.String(500), nullable=True)
+
+
+# Datenbanktabellen erstellen
+with app.app_context():
+    database.create_all()
+
+# Daten in die Datenbank einfügen
+with app.app_context():
+    # Extrahiere relevante Felder mit Fallback auf 'N/A', falls Felder nicht vorhanden sind
+    name = data.get('name', 'N/A')
+    hersteller = data.get('manufacturer', 'N/A')
+    dosierung = data.get('dosage', 'N/A')
+    beschreibung = data.get('description', 'N/A')
+
+    # Medikament-Objekt erstellen
+    new_medikament = Medikament(name=name, hersteller=hersteller, dosierung=dosierung, beschreibung=beschreibung)
+    database.session.add(new_medikament)
+
+    # Änderungen speichern
+    database.session.commit()
+
+print("Daten erfolgreich eingefügt.")
 
 
 @app.route("/")
@@ -73,13 +111,13 @@ def profile():
     if not session.get("logged_in"):
         return redirect(url_for("login"))
 
-    medications = Medications.query.all()
-    return render_template("profile.html", medications=medications)
+    return render_template("profile.html")
 
 
-@app.route("/medications")
-def medications():
-    return render_template("medications.html")
+@app.route("/medikamente")
+def medikamente():
+    medikamente = Medikament.query.all()
+    return render_template("medications.html", medikamente=medikamente)
 
 
 if __name__ == "__main__":
