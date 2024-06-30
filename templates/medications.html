@@ -7,14 +7,13 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <style>
         body {
-            background-color: #8DB6CD; /* Ändern Sie diese Farbe nach Bedarf */
-          h1 {
-              font-size: 1.7em; /* Schriftgröße auf 2em setzen */
-              margin-bottom: 15px; /* Abstand nach unten hinzufügen */
-              margin-top: 10px
-          }
-
-
+            background-color: #8DB6CD;
+        }
+        h1 {
+            font-size: 1.7em;
+            margin-bottom: 15px;
+            margin-top: 10px;
+        }
         .search-form input[type="text"] {
             width: 80%;
             padding: 8px;
@@ -22,7 +21,6 @@
             font-size: 16px;
             border-radius: 5px;
         }
-
         .search-form button {
             padding: 8px 15px;
             background-color: #0056b3;
@@ -32,10 +30,11 @@
             font-size: 16px;
             border-radius: 5px;
         }
-
         .search-form button:hover {
             background-color: #004799;
         }
+        .text-center {
+            text-align: center;
         }
     </style>
 </head>
@@ -79,28 +78,22 @@
   </div>
 </nav>
 <div class="container">
-    <h1>Welches Medikament suchen Sie? </h1>
+    <h1>Welches Medikament suchen Sie?</h1>
     <form action="/suche" method="GET" class="search-form">
         <input type="text" name="suche" id="suche" placeholder="Suche nach Medikamenten...">
         <button type="submit">Suchen</button>
     </form>
 </div>
-<table class="table table-bordered border-primary mt-5">
-    <tr>
-        <th>name</th>
-        <th>manufacturer</th>
-        <th>dosage</th>
-        <th>description</th>
-    </tr>
-    {% for medikament in medikamente %}
-    <tr>
-        <td>{{ medikament.name }}</td>
-        <td>{{ medikament.hersteller }}</td>
-        <td>{{ medikament.dosierung }}</td>
-        <td>{{ medikament.beschreibung }}</td>
-    </tr>
-    {% endfor %}
-</table>
-
+<div class="container mt-5">
+    <table class="table table-bordered border-primary">
+        <thead class="table-primary">
+            <tr>
+                <th class="text-center">Name</th>
+                <th class="text-center">Dosierung</th>
+                <th class="text-center">Hersteller</th>
+            </tr>
+        </thead>
+    </table>
+</div>
 </body>
 </html>

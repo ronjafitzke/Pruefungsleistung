@@ -1,28 +1,13 @@
 # -*- coding: utf-8 -*-
-import requests
 from flask import Flask, render_template, request, flash, redirect, url_for, session
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import datetime
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SECRET_KEY'] = 'your_secret_key'  # Notwendig für Flash-Messages
+app.config['SECRET_KEY'] = 'your_secret_key'
 database = SQLAlchemy(app)
-
-# API URL
-# Neue API URL und Header
-url = "https://drugapi.p.rapidapi.com/Drug/Summary/Acetaminophen-and-Codeine-Phosphate-Oral-Solution-acetaminophen-codeine-phosphate-665"
-
-headers = {
-    "x-rapidapi-key": "a6261f39ffmsh6d2b2c8f6353733p12512cjsn13b0c4ace526",
-    "x-rapidapi-host": "drugapi.p.rapidapi.com"
-}
-
-# Daten abrufen
-response = requests.get(url, headers=headers)
-data = response.json()
 
 
 class Users(database.Model):
@@ -34,33 +19,27 @@ class Users(database.Model):
 class Medikament(database.Model):
     id = database.Column(database.Integer, primary_key=True)
     name = database.Column(database.String(200), nullable=False)
-    hersteller = database.Column(database.String(200), nullable=False)
     dosierung = database.Column(database.String(200), nullable=False)
-    beschreibung = database.Column(database.String(500), nullable=True)
+    hersteller = database.Column(database.String(200), nullable=False)
+    user_id = database.Column(database.Integer, database.ForeignKey('users.id'), nullable=False)
+    user = database.relationship('Users', backref=database.backref('medikamente', lazy=True))
+
+
+class Medikamente(database.Model):
+    id = database.Column(database.Integer, primary_key=True)
+    name = database.Column(database.String(200), nullable=False)
+    dosierung = database.Column(database.String(200), nullable=False)
+    hersteller = database.Column(database.String(200), nullable=False)
+    anwendung = database.Column(database.String(500), nullable=False)
+    Verschreibungspflichtig = database.Column(database.String(200), nullable=False)
 
 
 # Datenbanktabellen erstellen
 with app.app_context():
     database.create_all()
 
-# Daten in die Datenbank einfügen
-with app.app_context():
-    # Extrahiere relevante Felder mit Fallback auf 'N/A', falls Felder nicht vorhanden sind
-    name = data.get('name', 'N/A')
-    hersteller = data.get('manufacturer', 'N/A')
-    dosierung = data.get('dosage', 'N/A')
-    beschreibung = data.get('description', 'N/A')
 
-    # Medikament-Objekt erstellen
-    new_medikament = Medikament(name=name, hersteller=hersteller, dosierung=dosierung, beschreibung=beschreibung)
-    database.session.add(new_medikament)
-
-    # Änderungen speichern
-    database.session.commit()
-
-print("Daten erfolgreich eingefügt.")
-
-
+# Restlicher Flask-Code bleibt unverändert
 @app.route("/")
 def home():
     return render_template('home.html')
@@ -111,13 +90,33 @@ def profile():
     if not session.get("logged_in"):
         return redirect(url_for("login"))
 
-    return render_template("profile.html")
+    user_id = session.get("user_id")
+    medications = Medikament.query.filter_by(user_id=user_id).all()
+    return render_template("profile.html", medications=medications)
 
 
 @app.route("/medikamente")
 def medikamente():
     medikamente = Medikament.query.all()
     return render_template("medications.html", medikamente=medikamente)
+
+
+@app.route("/add_my_medication", methods=["POST"])
+def add_my_medication():
+    if not session.get("logged_in"):
+        return redirect(url_for("login"))
+
+    name = request.form.get("name")
+    dosierung = request.form.get("dosierung")
+    hersteller = request.form.get("hersteller")
+    user_id = session.get("user_id")
+
+    new_medication = Medikament(name=name, dosierung=dosierung, hersteller=hersteller, user_id=user_id)
+    database.session.add(new_medication)
+    database.session.commit()
+
+    flash("Medikament erfolgreich hinzugefügt!")
+    return redirect(url_for("profile"))
 
 
 if __name__ == "__main__":

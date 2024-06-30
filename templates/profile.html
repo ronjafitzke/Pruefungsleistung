@@ -1,3 +1,4 @@
+<!-- profile.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -59,24 +60,58 @@
 <div class="container mt-5">
     <div class="header">
         <h1>Meine Medikamente</h1>
-        <button type="button" class="btn btn-outline-primary">+</button>
+        <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addMedicationModal">+</button>
     </div>
     <table class="table table-striped mt-3">
         <thead>
             <tr>
                 <th>Name</th>
-                <th>Beschreibung</th>
+                <th>Dosierung</th>
+                <th>Hersteller</th>
             </tr>
         </thead>
         <tbody>
             {% for medication in medications %}
                 <tr>
                     <td>{{ medication.name }}</td>
-                    <td>{{ medication.description }}</td>
+                    <td>{{ medication.dosierung }}</td>
+                    <td>{{ medication.hersteller }}</td>
                 </tr>
             {% endfor %}
         </tbody>
     </table>
+</div>
+
+<!-- Modal für das Hinzufügen neuer Medikamente -->
+<div class="modal fade" id="addMedicationModal" tabindex="-1" aria-labelledby="addMedicationModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="POST" action="{{ url_for('add_my_medication') }}">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addMedicationModalLabel">Neues Medikament hinzufügen</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="medication-name" class="form-label">Name</label>
+                        <input type="text" class="form-control" id="medication-name" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="medication-dosierung" class="form-label">Dosierung</label>
+                        <input type="text" class="form-control" id="medication-dosierung" name="dosierung" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="medication-hersteller" class="form-label">Hersteller</label>
+                        <input type="text" class="form-control" id="medication-hersteller" name="hersteller" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                    <button type="submit" class="btn btn-primary">Hinzufügen</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 </body>
 </html>
