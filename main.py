@@ -25,18 +25,30 @@ class Medikament(database.Model):
     user = database.relationship('Users', backref=database.backref('medikamente', lazy=True))
 
 
-class Medikamente(database.Model):
+class Medizin(database.Model):
     id = database.Column(database.Integer, primary_key=True)
     name = database.Column(database.String(200), nullable=False)
-    dosierung = database.Column(database.String(200), nullable=False)
     hersteller = database.Column(database.String(200), nullable=False)
     anwendung = database.Column(database.String(500), nullable=False)
-    Verschreibungspflichtig = database.Column(database.String(200), nullable=False)
+    rezeptpflichtig = database.Column(database.String(200), nullable=False)
 
 
 # Datenbanktabellen erstellen
 with app.app_context():
     database.create_all()
+
+    if not Medizin.query.filter_by(name="Arcasin® TS").first():
+        # Beispieldaten hinzufügen
+        example_data = [
+            Medizin(name="Arcasin® TS", hersteller="MEDA Pharma GmbH & Co. KG", anwendung="Leichte bis mittelschwere Infekt. mit Phenoxymethylpenicillin-sensiblen Erregern, wie z. B.: Infekt. des HNO-Bereiches, Infekt. der tiefen Atemwege, Infekt. im Zahn-, Mund- u. Kieferbereich, Endokarditisprophylaxe bei Eingriffen im Zahn-, Mund- u. Kieferbereich od. am oberen Respirationstrakt, Infekt. der Haut, Lymphadenitis, Lymphangitis, Infekt. durch β-häm. Streptokokken der Gruppe A, z. B. Scharlach, Erysipel, Rezidivprophylaxe bei rheumat. Fieber. Ggf. ist eine Komb. mit einem weiteren geeigneten Antibiotikum mögl.", rezeptpflichtig="Ja"),
+            Medizin(name="Amoxi-saar® plus", hersteller="MIP Pharma GmbH", anwendung="Akute bakterielle Sinusitis (nach adäquater Diagnosestellung); akute Otitis media; akute Exazerbationen einer chronischen Bronchitis (nach adäquater Diagnosestellung); ambulant erworbene Pneumonie; Urozystitis; Pyelonephritis; Haut- und Weichteilinfektionen, insbesondere Infektionen der unteren Hautschichten, Tierbisse, schwere dentale Abszesse mit sich lokal ausbreitender Infektion; Knochen- und Gelenkinfektionen, insbesondere Osteomyelitis.", rezeptpflichtig="Ja"),
+            Medizin(name="ARIKAYCE® liposomal", hersteller="Insmed Netherlands B.V.", anwendung="ARIKAYCE liposomal wird angewendet zur Behandlung von Lungeninfektionen, verursacht durch zum Mycobacterium-avium-Komplex (MAC) gehörende nicht-tuberkulöse Mykobakterien (NTM), bei Erwachsenen mit begrenzten Behandlungsoptionen, die keine zystische Fibrose haben.", rezeptpflichtig="Ja")
+
+        ]
+
+        for med in example_data:
+            database.session.add(med)
+        database.session.commit()
 
 
 # Restlicher Flask-Code bleibt unverändert
@@ -97,7 +109,7 @@ def profile():
 
 @app.route("/medikamente")
 def medikamente():
-    medikamente = Medikament.query.all()
+    medikamente = Medizin.query.all()
     return render_template("medications.html", medikamente=medikamente)
 
 

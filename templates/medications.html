@@ -89,10 +89,21 @@
         <thead class="table-primary">
             <tr>
                 <th class="text-center">Name</th>
-                <th class="text-center">Dosierung</th>
                 <th class="text-center">Hersteller</th>
+                <th class="text-center">Anwendung</th>
+                <th class="text-center">Rezeptpflichtig</th>
             </tr>
         </thead>
+        <tbody>
+            {% for med in medikamente %}
+            <tr>
+                <td>{{ med.name }}</td>
+                <td>{{ med.hersteller }}</td>
+                <td>{{ med.anwendung }}</td>
+                <td>{{ med.rezeptpflichtig }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
     </table>
 </div>
 </body>
