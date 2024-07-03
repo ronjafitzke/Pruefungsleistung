@@ -3,20 +3,20 @@ from flask import Flask, render_template, request, flash, redirect, url_for, ses
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SECRET_KEY'] = 'your_secret_key'
-database = SQLAlchemy(app)
+app = Flask(__name__)   # Erstellt die Flask Anwendung
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db' # Gibt den Pfad zur SQLite-Datenbankdatei an
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False    # Deaktiviert die SQLAlchemy Änderungsverfolgung, um Ressourcen zu sparen
+app.config['SECRET_KEY'] = 'your_secret_key'    # geheimer Schlüssel, der für die Sitzungen und die Flash-Nachrichten verwendet wird
+database = SQLAlchemy(app)  # erstellt eine SQLALchemy Instanz
 
 
-class Users(database.Model):
+class Users(database.Model):    # Datenbankmodell für die Benutzer
     id = database.Column(database.Integer, primary_key=True)
     email = database.Column(database.String(200), unique=True, nullable=False)
     password = database.Column(database.String(200), nullable=False)
 
 
-class Medikament(database.Model):
+class Medikament(database.Model):   # Datenbankmodell für die persönlichen Medikamente
     id = database.Column(database.Integer, primary_key=True)
     name = database.Column(database.String(200), nullable=False)
     dosierung = database.Column(database.String(200), nullable=False)
@@ -25,7 +25,7 @@ class Medikament(database.Model):
     user = database.relationship('Users', backref=database.backref('medikamente', lazy=True))
 
 
-class Medizin(database.Model):
+class Medizin(database.Model):  # Datenbankmodell für die allgemein verfügbaren Medikamente
     id = database.Column(database.Integer, primary_key=True)
     name = database.Column(database.String(200), nullable=False)
     hersteller = database.Column(database.String(200), nullable=False)
@@ -35,9 +35,9 @@ class Medizin(database.Model):
 
 # Datenbanktabellen erstellen
 with app.app_context():
-    database.create_all()
+    database.create_all()   # erstellt alle Tabellen, die durch die Datenbankmodelle definiert sind
 
-    if not Medizin.query.filter_by(name="Arcasin® TS").first():
+    if not Medizin.query.filter_by(name="Arcasin® TS").first(): # wenn die Tabelle leer ist:
         # Beispieldaten hinzufügen
         example_data = [
             Medizin(name="Arcasin® TS", hersteller="MEDA Pharma GmbH & Co. KG", anwendung="Leichte bis mittelschwere Infekt. mit Phenoxymethylpenicillin-sensiblen Erregern, wie z. B.: Infekt. des HNO-Bereiches, Infekt. der tiefen Atemwege, Infekt. im Zahn-, Mund- u. Kieferbereich, Endokarditisprophylaxe bei Eingriffen im Zahn-, Mund- u. Kieferbereich od. am oberen Respirationstrakt, Infekt. der Haut, Lymphadenitis, Lymphangitis, Infekt. durch β-häm. Streptokokken der Gruppe A, z. B. Scharlach, Erysipel, Rezidivprophylaxe bei rheumat. Fieber. Ggf. ist eine Komb. mit einem weiteren geeigneten Antibiotikum mögl.", rezeptpflichtig="Ja"),
@@ -47,11 +47,11 @@ with app.app_context():
         ]
 
         for med in example_data:
-            database.session.add(med)
+            database.session.add(med)   # Jede Instanz von Medizin wird der aktuellen Sitzung hinzugefügt
         database.session.commit()
 
 
-# Restlicher Flask-Code bleibt unverändert
+# Routen
 @app.route("/")
 def home():
     return render_template('home.html')
@@ -59,13 +59,13 @@ def home():
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
-    if request.method == "POST":
+    if request.method == "POST": # überprüft ob die Anfragemethode "Post" ist, alo ob das Registrierungsformular abgeschickt wurde
         email = request.form.get("email")
         password = request.form.get("password")
         hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
 
-        new_user = Users(email=email, password=hashed_password)
-        database.session.add(new_user)
+        new_user = Users(email=email, password=hashed_password) # erstellt eine neue Instanz des User Modells
+        database.session.add(new_user) # fügt die Daten in die Datenbank hinzu
         database.session.commit()
         flash("Registrierung erfolgreich! Sie können sich jetzt einloggen.")
         return redirect(url_for("login"))
@@ -79,7 +79,7 @@ def login():
         email = request.form.get("email")
         password = request.form.get("password")
 
-        user = Users.query.filter_by(email=email).first()
+        user = Users.query.filter_by(email=email).first() # Abfrage sucht nach einem Benutzer in der Datenbank, dessen E-Mail-Adresse mit der eingegebenen übereinstimmt
         if user and check_password_hash(user.password, password):
             session["logged_in"] = True
             session["user_id"] = user.id
@@ -93,7 +93,7 @@ def login():
 
 @app.route("/logout")
 def logout():
-    session.pop('logged_in', None)  # Lösche die Session-Variable für eingeloggten Benutzer
+    session.pop('logged_in', None) # Entfernt die Session-Variable 'logged_in', die anzeigt, dass ein Benutzer eingeloggt ist
     return redirect(url_for('home'))
 
 
@@ -107,9 +107,14 @@ def profile():
     return render_template("profile.html", medications=medications)
 
 
-@app.route("/medikamente")
+@app.route("/medikamente", methods=["GET", "POST"])
 def medikamente():
-    medikamente = Medizin.query.all()
+    suche = request.args.get("suche")
+    if suche:
+        medikamente = Medizin.query.filter(Medizin.name.like(f"%{suche}%")).all()
+    else:
+        medikamente = Medizin.query.all()
+
     return render_template("medications.html", medikamente=medikamente)
 
 

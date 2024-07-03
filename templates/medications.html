@@ -79,10 +79,12 @@
 </nav>
 <div class="container">
     <h1>Welches Medikament suchen Sie?</h1>
-    <form action="/suche" method="GET" class="search-form">
-        <input type="text" name="suche" id="suche" placeholder="Suche nach Medikamenten...">
-        <button type="submit">Suchen</button>
-    </form>
+    <div class="search-form">
+        <form action="/medikamente" method="GET">
+            <input type="text" name="suche" id="suche" placeholder="Suche nach dem Medikamentennamen...">
+            <button type="submit">Suchen</button>
+        </form>
+    </div>
 </div>
 <div class="container mt-5">
     <table class="table table-bordered border-primary">
@@ -103,8 +105,28 @@
                 <td>{{ med.rezeptpflichtig }}</td>
             </tr>
             {% endfor %}
+            <!-- Anzeige der Suchergebnisse -->
+            {% if search_results %}
+            {% for result in search_results %}
+            <tr>
+                <td>{{ result.name }}</td>
+                <td>{{ result.hersteller }}</td>
+                <td>{{ result.anwendung }}</td>
+                <td>{{ result.rezeptpflichtig }}</td>
+            </tr>
+            {% endfor %}
+            {% endif %}
         </tbody>
     </table>
 </div>
+
+<script>
+    function searchMedication() {
+        var searchQuery = document.getElementById("search_input").value;
+        // Weiterleitung zur Suchergebnisse-Seite mit dem Suchbegriff als Parameter
+        window.location.href = "/medikamente?suche=" + searchQuery;
+    }
+</script>
+
 </body>
 </html>

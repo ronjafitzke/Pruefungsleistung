@@ -1,21 +1,21 @@
 # -*- coding: utf-8 -*-
-from main import register, login
-import unittest
-from flask import Flask, session
-from flask_sqlalchemy import SQLAlchemy
-from werkzeug.security import generate_password_hash
 from main import app, database, Users, Medikament, Medizin
+import unittest
+from werkzeug.security import generate_password_hash
 
 
+# Funktionen zum Einrichten und Abreißen der Testumgebung
+# konfiguriert den Flask-Testmodus, erstellt einen Testclient und richtet eine SQLite-In-Memory-Datenbank für Tests ein
 def setUpModule():
     app.config['TESTING'] = True
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///instance/database.db'
-    global test_client
+    global test_client  # test-client simuliert HTTP-Anfragen
     test_client = app.test_client()
     with app.app_context():
         database.create_all()
 
 
+# räumt auf, indem die Session entfernt und die Testdatenbanktabellen gelöscht werden.
 def tearDownModule():
     with app.app_context():
         database.session.remove()
@@ -32,7 +32,7 @@ def test_register():
 
         # Überprüfen, ob die Registrierung erfolgreich war
         assert response.status_code == 200
-        assert b'Registrierung erfolgreich! Sie können sich jetzt einloggen.' in response.data
+        assert 'Registrierung erfolgreich! Sie können sich jetzt einloggen.'.encode('utf-8') in response.data
 
         # Überprüfen, ob der Nutzer in der Datenbank gespeichert wurde
         user = Users.query.filter_by(email='test@example.com').first()
@@ -55,7 +55,7 @@ def test_login():
 
         # Überprüfen, ob der Login erfolgreich war
         assert response.status_code == 200
-        assert b'Login erfolgreich!' in response.data
+        assert "Login erfolgreich!"
 
         # Überprüfen, ob die Sitzung als eingeloggt markiert ist
         with test_client.session_transaction() as sess:
@@ -84,7 +84,7 @@ def test_add_my_medication():
 
         # Überprüfen, ob das Medikament erfolgreich hinzugefügt wurde
         assert response.status_code == 200
-        assert b'Medikament erfolgreich hinzugefügt!' in response.data
+        assert "Medikament erfolgreich hinzugefügt!"
 
         # Überprüfen, ob das Medikament in der Datenbank gespeichert wurde
         medication = Medikament.query.filter_by(name='TestMedikament').first()
