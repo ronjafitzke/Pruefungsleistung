@@ -28,9 +28,11 @@ def test_calculate_price_invalid_input(client):
 
 
 def test_calculate_dose_valid_input(client):
-    rv = client.post('/dose', data={'einzeldosis': '5', 'häufigkeit': '3', 'zeitraum': '7'})
-    assert b'17.142857' in rv.data
+    rv = client.post('/dose', data={'einzeldosis': '5', 'häufigkeit': '4', 'zeitraum': '7'})
+    assert b'Gesamtdosis pro Tag: 30.0 mg' in rv.data
+    assert b'Gesamtdosis: 210.0 mg' in rv.data
     assert rv.status_code == 200
+
 
 
 def test_calculate_dose_invalid_input(client):
