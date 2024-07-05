@@ -21,6 +21,7 @@ class Medikament(database.Model):   # Datenbankmodell für die persönlichen Med
     name = database.Column(database.String(200), nullable=False)
     dosierung = database.Column(database.String(200), nullable=False)
     hersteller = database.Column(database.String(200), nullable=False)
+    time = database.Column(database.String(200), nullable=False)
     user_id = database.Column(database.Integer, database.ForeignKey('users.id'), nullable=False)
     user = database.relationship('Users', backref=database.backref('medikamente', lazy=True))
 
@@ -127,9 +128,10 @@ def add_my_medication():
     name = request.form.get("name")
     dosierung = request.form.get("dosierung")
     hersteller = request.form.get("hersteller")
+    time = request.form.get("time")
     user_id = session.get("user_id")
 
-    new_medication = Medikament(name=name, dosierung=dosierung, hersteller=hersteller, user_id=user_id)
+    new_medication = Medikament(name=name, dosierung=dosierung, hersteller=hersteller, time=time, user_id=user_id)
     database.session.add(new_medication)
     database.session.commit()
 
@@ -137,7 +139,7 @@ def add_my_medication():
     return redirect(url_for("profile"))
 
 
-@app.route("/calculator", methods=["GET","POST"])
+@app.route("/calculator", methods=["GET", "POST"])
 def calculate_price():
     result = None
     if request.method == "POST":

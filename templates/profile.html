@@ -77,6 +77,7 @@
                 <th>Name</th>
                 <th>Dosierung</th>
                 <th>Hersteller</th>
+                <th>Zeitpunkt der Einnahme</th>
             </tr>
         </thead>
         <tbody>
@@ -85,6 +86,7 @@
                     <td>{{ medication.name }}</td>
                     <td>{{ medication.dosierung }}</td>
                     <td>{{ medication.hersteller }}</td>
+                    <td>{{ medication.time }}</td>
                 </tr>
             {% endfor %}
         </tbody>
@@ -112,6 +114,10 @@
                     <div class="mb-3">
                         <label for="medication-hersteller" class="form-label">Hersteller</label>
                         <input type="text" class="form-control" id="medication-hersteller" name="hersteller" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="medication-time" class="form-label">Zeitpunkt der Einnahme</label>
+                        <input type="text" class="form-control" id="medication-time" name="time" required>
                     </div>
                 </div>
                 <div class="modal-footer">
