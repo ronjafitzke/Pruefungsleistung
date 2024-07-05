@@ -1,1 +1,1 @@
-Medikamentverwaltung
+Web-Anwendung zur Selbstverwaltung von Medikamenten. Der Abschnitt "Medikamente" stellt eine Liste dar in der alle in der Apotheke verfügbaren Medikamente dargestellt werden sollen, wozu vier Medikamente als Beispiel eingetragen sind. Unter dem Reiter "Profil" können dann die eigenen Medikamente eingetragen werden. Des Weiteren sind 3 Reiter zur Berechnung vom BMI, der für manche Medikamente von Bedeutung ist, die Berechnung von der Gesamtdosis und die Berechnung von dem Preis mehrerer Medikamente vorhanden.
